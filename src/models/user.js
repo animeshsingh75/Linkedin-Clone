@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const validator = require("validator");
 
 const userSchema = new mongoose.Schema(
   {
@@ -21,12 +22,22 @@ const userSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
       trim: true,
+      validate(value) {
+        if (!validator.isEmail(value)) {
+          throw new Error("Invalid email address");
+        }
+      },
     },
     password: {
       type: String,
       required: true,
       minLength: 6,
       maxLength: 15,
+      validate(value) {
+        if (!validator.isStrongPassword(value)) {
+          throw new Error("Password isnt strong enough");
+        }
+      },
     },
     age: {
       type: Number,
@@ -50,6 +61,11 @@ const userSchema = new mongoose.Schema(
       default:
         "https://liccar.com/wp-content/uploads/png-transparent-head-the-dummy-avatar-man-tie-jacket-user.png",
       trim: true,
+      validate(value) {
+        if (!validator.isURL(value)) {
+          throw new Error("Invalid photo URL");
+        }
+      },
     },
     about: {
       type: String,
