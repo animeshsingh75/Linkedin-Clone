@@ -44,10 +44,25 @@ app.delete("/user", async (req, res) => {
   }
 });
 
-app.patch("/user", async (req, res) => {
-  const userId = req.body.userId;
+app.patch("/user/:userId", async (req, res) => {
+  const userId = req.params?.userId;
   const data = req.body;
+
   try {
+    const ALLOWED_UPDATES = [
+      "userId",
+      "photoUrl",
+      "about",
+      "age",
+      "gender",
+      "skills",
+    ];
+    const isUpdateAllowed = Object.keys(data).every((k) =>
+      ALLOWED_UPDATES.includes(k)
+    );
+    if (!isUpdateAllowed) {
+      throw new Error("Update not allowed");
+    }
     await User.findByIdAndUpdate(userId, data, {
       runValidators: true,
     });
@@ -73,10 +88,24 @@ app.get("/userById", async (req, res) => {
   }
 });
 
-app.patch("/updateUserByEmail", async (req, res) => {
-  const emailId = req.body.emailId;
+app.patch("/updateUserByEmail/:emailId", async (req, res) => {
+  const emailId = req.params?.emailId;
   const data = req.body;
   try {
+    const ALLOWED_UPDATES = [
+      "userId",
+      "photoUrl",
+      "about",
+      "age",
+      "gender",
+      "skills",
+    ];
+    const isUpdateAllowed = Object.keys(data).every((k) =>
+      ALLOWED_UPDATES.includes(k)
+    );
+    if (!isUpdateAllowed) {
+      throw new Error("Update not allowed");
+    }
     await User.findOneAndUpdate({ emailId: emailId }, data, {
       runValidators: true,
     });
