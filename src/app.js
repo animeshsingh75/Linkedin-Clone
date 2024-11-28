@@ -13,9 +13,12 @@ app.post("/signup", async (req, res) => {
     await user.save();
     res.send("User added successfully");
   } catch (err) {
-    res.status(400).send("Error while saving user", err);
+    res
+      .status(400)
+      .json({ error: "Error while saving user", details: err.message });
   }
 });
+
 app.get("/user", async (req, res) => {
   const userEmail = req.body.emailId;
   console.log(userEmail);
@@ -45,13 +48,14 @@ app.patch("/user", async (req, res) => {
   const userId = req.body.userId;
   const data = req.body;
   try {
-    const user = await User.findByIdAndUpdate(userId, data, {
-      returnDocument: "after",
+    await User.findByIdAndUpdate(userId, data, {
+      runValidators: true,
     });
-    console.log(user);
     res.send("User updated successfully");
   } catch (err) {
-    res.status(400).send("Something went wrong", err);
+    res
+      .status(400)
+      .json({ error: "Error while saving user", details: err.message });
   }
 });
 
@@ -73,10 +77,14 @@ app.patch("/updateUserByEmail", async (req, res) => {
   const emailId = req.body.emailId;
   const data = req.body;
   try {
-    await User.findOneAndUpdate({ emailId: emailId }, data);
+    await User.findOneAndUpdate({ emailId: emailId }, data, {
+      runValidators: true,
+    });
     res.send("User updated successfully");
   } catch (err) {
-    res.status(400).send("Something went wrong", err);
+    res
+      .status(400)
+      .json({ error: "Error while saving user", details: err.message });
   }
 });
 
@@ -88,6 +96,7 @@ app.get("/feed", async (req, res) => {
     res.status(400).send("Something went wrong", err);
   }
 });
+
 connectDB()
   .then(() => {
     console.log("Connected to database");
