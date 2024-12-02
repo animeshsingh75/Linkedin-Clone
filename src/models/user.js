@@ -31,8 +31,6 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-      minLength: 6,
-      maxLength: 15,
       validate(value) {
         if (!validator.isStrongPassword(value)) {
           throw new Error("Password isnt strong enough");
