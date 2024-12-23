@@ -12,4 +12,44 @@ const validateSignUpData = (req) => {
   }
 };
 
-module.exports = { validateSignUpData };
+const validateEditProfileData = (req) => {
+  const allowedEditFields = [
+    "firstName",
+    "lastName",
+    "emailId",
+    "photoUrl",
+    "about",
+    "skills",
+    "gender",
+    "age",
+  ];
+  const isEditAllowed = Object.keys(req.body).every((field) =>
+    allowedEditFields.includes(field)
+  );
+  return isEditAllowed;
+};
+
+const validatePasswordData = async (req) => {
+  const allowedEditFields = ["oldPassword", "newPassword"];
+  const isEditAllowed = Object.keys(req.body).every((field) =>
+    allowedEditFields.includes(field)
+  );
+  if (!isEditAllowed) {
+    throw new Error("Invalid fields in the request");
+  }
+  const { oldPassword, newPassword } = req.body;
+  const user = req.user;
+  const isPasswordValid = await user.verifyPassword(oldPassword);
+  if (!isPasswordValid) {
+    throw new Error("Old password is incorrect");
+  }
+  if (!validator.isStrongPassword(newPassword)) {
+    throw new Error("New password is not strong enough");
+  }
+};
+
+module.exports = {
+  validateSignUpData,
+  validateEditProfileData,
+  validatePasswordData,
+};
